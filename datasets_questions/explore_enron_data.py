@@ -16,7 +16,19 @@
 """
 
 import pickle
+import simplejson as json
 
 enron_data = pickle.load(open("../final_project/final_project_dataset.pkl", "r"))
 
+sal = 0
+total = 0
+for key, value in enron_data.iteritems():
+	if (value['poi']):
+		if(value['total_payments'] == 'NaN'):
+			sal = sal + 1
+		total = total + 1
 
+print sal
+print total
+
+# print enron_data['COLWELL WESLEY']['total_stock_value']

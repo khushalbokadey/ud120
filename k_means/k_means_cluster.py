@@ -43,11 +43,52 @@ data_dict = pickle.load( open("../final_project/final_project_dataset.pkl", "r")
 ### there's an outlier--remove it! 
 data_dict.pop("TOTAL", 0)
 
+min_value = sys.maxsize
+max_value = 0
+sal_arr = []
+stock_arr = []
+for k,v in data_dict.iteritems():
+    if(v['salary'] != 'NaN' and v['salary'] > max_value):
+        max_value = v['salary']
+
+
+    if(v['salary'] != 'NaN' and v['salary'] < min_value):
+        min_value = v['salary']
+
+    if(v['salary'] != 'NaN'):
+        sal_arr.append(float(v['salary']))
+
+    if(v['exercised_stock_options'] != 'NaN'):
+        stock_arr.append(float(v['exercised_stock_options']))
+
+# print stock_arr
+
+sal_arr.append(200000)
+stock_arr.append(1000000)
+
+from sklearn import preprocessing
+import numpy as np
+
+sal_train = np.reshape(sal_arr, (-1, 1))
+# sal_train.reshape(-1, 1)
+print sal_train
+min_max_scaler = preprocessing.MinMaxScaler()
+sal_train_minmax = min_max_scaler.fit_transform(sal_train)
+print sal_train_minmax
+
+stock_train = np.reshape(stock_arr, (-1, 1))
+# stock_train.reshape(-1, 1)
+print stock_train
+min_max_scaler = preprocessing.MinMaxScaler()
+stock_train_minmax = min_max_scaler.fit_transform(stock_train)
+print stock_train_minmax
+
 
 ### the input features we want to use 
 ### can be any key in the person-level dictionary (salary, director_fees, etc.) 
 feature_1 = "salary"
 feature_2 = "exercised_stock_options"
+feature_3 = "total_payments"
 poi  = "poi"
 features_list = [poi, feature_1, feature_2]
 data = featureFormat(data_dict, features_list )
@@ -58,13 +99,16 @@ poi, finance_features = targetFeatureSplit( data )
 ### you'll want to change this line to 
 ### for f1, f2, _ in finance_features:
 ### (as it's currently written, the line below assumes 2 features)
-for f1, f2 in finance_features:
-    plt.scatter( f1, f2 )
-plt.show()
+# for f1, f2 in finance_features:
+#     plt.scatter( f1, f2 )
+# plt.show()
 
 ### cluster here; create predictions of the cluster labels
 ### for the data and store them to a list called pred
 
+from sklearn.cluster import KMeans
+kmeans = KMeans(n_clusters=2).fit(finance_features)
+pred = kmeans.predict(finance_features)
 
 
 
